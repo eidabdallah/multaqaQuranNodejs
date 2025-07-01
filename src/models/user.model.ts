@@ -12,6 +12,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
     public CollegeName!: string;
     public confirmEmail!: boolean;
     public status!: 'Active' | 'No_Active';
+    public gender!: 'Male' | 'Female';
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -51,6 +52,10 @@ User.init({
     status: {
         type: DataTypes.ENUM('Active', 'No_Active'),
         defaultValue: 'No_Active',
+        allowNull: false,
+    },
+    gender: {
+        type: DataTypes.ENUM('Male', 'Female'),
         allowNull: false,
     },
 }, {

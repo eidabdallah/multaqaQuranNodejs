@@ -7,4 +7,5 @@ export interface UserAttributes {
     CollegeName: string;
     confirmEmail: boolean;
     status: 'Active' | 'No_Active';
+    gender: 'Male' | 'Female';
 }

@@ -24,6 +24,9 @@ export default class AuthController {
         }
         const secret = process.env.JWT_SECRET_LOGIN as string;
         const token = jwt.sign({ id: user.id, universityId: user.universityId }, secret);
+        if(!user.confirmEmail) {
+            return next(new ApiError("الرجاء تاكيد ايميلك الجامعي", 400));
+        }
         if(user.status === "No_Active") {
             return next(new ApiError("لم يتم قبول حسابك بعد من قبل المسؤول", 400));
         }
