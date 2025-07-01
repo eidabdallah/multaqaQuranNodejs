@@ -62,6 +62,7 @@ export default class AuthController {
     }
      async getUser(req: Request, res: Response) {
         const user = (req as any).user;
-        return res.status(200).json({ message: "user information", user  });
+        console.log(user);
+        return res.status(200).json({ message: "معلومات المستخدم", user  });
     }
 }

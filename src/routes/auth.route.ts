@@ -11,7 +11,7 @@ const authController = new AuthController(authService);
 router.post("/register", AsyncHandler.asyncHandler(authController.register));
 router.get('/confirmEmail/:token', AsyncHandler.asyncHandler(authController.confirmEmail));
 router.post("/login", AsyncHandler.asyncHandler(authController.login));
-router.get("/user", Auth.authMiddleware, AsyncHandler.asyncHandler(authController.getUser));
+router.get("/user", Auth.authMiddleware(), AsyncHandler.asyncHandler(authController.getUser));
 
 
 
