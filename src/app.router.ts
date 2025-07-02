@@ -1,25 +1,16 @@
 import express, { Application, Request, Response } from "express";
-import cors from 'cors'
-import morgan from "morgan";
 import { connectDB } from "./config/DBconnection";
-import SecurityMiddleware from "./utils/security";
-import RateLimiterMiddleware from './utils/rateLimiter';
-import CompressionMiddleware from './utils/compression';
 import NotFoundMiddleware from './utils/NotFound';
 import ErrorMiddleware from './utils/Error';
 import authRoutes from './routes/auth.route'
+import setupMiddlewares from './utils/setupMiddlewares';
+import registerCronJobs from './utils/startCronJobs';
 
 
 export const initApp = (app: Application) => {
     connectDB();
-    app.use(cors())
-    app.use(SecurityMiddleware.helmetSecurity);
-    app.use(RateLimiterMiddleware.RateLimiter);
-    if (process.env.NODE_ENV === 'development') {
-        app.use(morgan('dev'));
-    }
-    app.use(CompressionMiddleware.compression);
-
+    setupMiddlewares(app);
+    registerCronJobs();
     app.use(express.json());
     
     app.get('/', (req: Request, res: Response) => res.json({ message: 'اهلا بك في ملتقى القران الكريم جنة النجاح' }));
