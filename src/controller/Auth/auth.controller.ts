@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import AuthService from './../../services/auth.service';
 import { ApiError } from './../../utils/ApiError';
 import { confirmEmailMessage, sendConfirmEmail, sendCode } from './../../utils/authTemplete';
-import { customAlphabet } from 'nanoid';
 import { generateRandomCode } from './../../utils/generateCode';
 
 export default class AuthController {
