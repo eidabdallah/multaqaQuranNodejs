@@ -17,7 +17,7 @@ export class AuthValidation {
             "any.required": "رقم الهاتف مطلوب.",
             "string.pattern.base": "رقم الهاتف يجب أن يبدأ بصفر ويتكون من 10 أرقام.",
         }),
-        CollegeName: Joi.string().valid(...CollegesEnum).required().messages({
+        CollegeName: Joi.string().valid(...Object.values(CollegesEnum)).required().messages({
             "any.only": "الكلية غير صالحة.",
             "any.required": "الكلية مطلوبة.",
         }),
@@ -30,6 +30,11 @@ export class AuthValidation {
     static loginSchema = Joi.object({
         universityId: Validator.generalFields.universityId,
         password: Validator.generalFields.password,
+    });
+    static changePasswordSchema = Joi.object({
+        universityId: Validator.generalFields.universityId,
+        oldPassword: Validator.generalFields.password,
+        newPassword: Validator.generalFields.password,
     });
 }
 

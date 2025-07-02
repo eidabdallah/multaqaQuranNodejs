@@ -1,54 +1,42 @@
 import jwt from 'jsonwebtoken';
-import { ApiError } from './../utils/ApiError';
-import { NextFunction, Request, Response } from 'express';
-import User from './../models/user.model';
-import Role from './../models/role.model';
+import { ApiError } from '../utils/ApiError';
+import { Request, Response, NextFunction } from 'express';
+import User from '../models/user.model';
+import Role from '../models/role.model';
+import { cache } from '../utils/cache';
 
-export const roles = {
-    ADMIN: 'Admin',
-    STUDENT: 'Student',
-    DOCTOR: 'Doctor',
-    SUPERVISOR: 'Supervisor',
-    CollegeSUPERVISOR: 'CollegeSupervisor',
-};
-
-export class Auth {
-    static authMiddleware(accessRoles: string[] = []) {
+export class AuthMiddleware {
+    static authorize(allowedRoles: string[] = []) {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const { authorization } = req.headers; 
+                const { authorization } = req.headers;
                 if (!authorization?.startsWith(process.env.BEARERKEY as string)) {
                     return next(new ApiError("التوكن غير متوفر", 401));
                 }
-
-                const token = authorization.split(process.env.BEARERKEY as string)[1];
-
-                const decode = jwt.verify(token, process.env.JWT_SECRET_LOGIN as string) as any;
-
-                if (!decode) {
-                    return next(new ApiError("التوكن غير متوفر", 401));
+                const token = authorization.slice((process.env.BEARERKEY as string).length).trim();
+                const payload = jwt.verify(token, process.env.JWT_SECRET_LOGIN!) as any;
+                if (!payload) {
+                    return next(new ApiError("التوكن غير صالح", 401));
                 }
-
-
-                const user = await User.findByPk(decode.id, {
-                    attributes: ['id', 'fullName', 'universityId', 'status', 'phoneNumber', 'CollegeName'],
-                    include: [{
-                        model: Role,
-                        attributes: ['name']
-                    }]
-                });
+                const cacheKey = `user-${payload.universityId}`;
+                let user = cache.get(cacheKey);
                 if (!user) {
-                    return next(new ApiError("المستخدم غير متوفر", 404));
+                    const dbUser = await User.findByPk(payload.id, {
+                        attributes: ['id', 'fullName', 'universityId', 'status', 'phoneNumber', 'CollegeName', 'password'],
+                        include: [{ model: Role, attributes: ['name'] }]
+                    });
+                    if (!dbUser) return next(new ApiError("المستخدم غير موجود", 404));
+                    user = dbUser.toJSON();
+                    cache.set(cacheKey, user);
                 }
-                if (accessRoles.length > 0 && !accessRoles.includes((user as any).Role.name)) {
+                if (allowedRoles.length && !allowedRoles.includes((user as any).Role.name)) {
                     return next(new ApiError("لا يوجد صلاحيات", 403));
                 }
                 (req as any).user = user;
                 next();
-            } catch (error: any) {
-                return next(new ApiError(error.message || error.stack, 500));
+            } catch (err: any) {
+                next(new ApiError(err.message || "خطأ غير متوقع", 500));
             }
-        }
-    };
+        };
+    }
 }
-
