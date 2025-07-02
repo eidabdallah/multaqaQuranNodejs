@@ -2,6 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import { sequelize } from './../config/DBconnection';
 import { UserAttributes } from '../interface/user/user.interface';
 import { UserCreationAttributes } from '../interface/user/userCreation.interface';
+import passwordResetCode from './passwordResetCode.model';
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public id!: number;
@@ -68,5 +69,9 @@ User.init({
     tableName: 'users',
     timestamps: true,
 });
+
+User.hasOne(passwordResetCode, { onDelete: 'CASCADE' });
+passwordResetCode.belongsTo(User, { onDelete: 'CASCADE' });
+
 
 export default User;

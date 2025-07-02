@@ -54,9 +54,6 @@ export const sendConfirmEmail = async (universityId: string, userName: string, r
     EmailService.sendEmail({ to: `s${universityId}@stu.najah.edu`, subject: 'تم تسجيلك بنجاح', html });
 }
 
-
-
-
 export const confirmEmailMessage = (name: string, res: Response) => {
     const html = `
     <div style="font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 30px;">
@@ -91,8 +88,8 @@ export const confirmEmailMessage = (name: string, res: Response) => {
 }
 
 
-/*
-export const sendCodeToEmail = async (email, code) => {
+
+export const sendCode = async (universityId: string, code : string) => {
   const html = `
       <div style="font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 30px;">
         <div style="max-width: 600px; margin: auto; background: linear-gradient(135deg, #007bff, #d97b32); padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
@@ -122,8 +119,6 @@ export const sendCodeToEmail = async (email, code) => {
         </div>
       </div>
     `;
-
-  await sendEmail(email, 'إعادة تعيين كلمة المرور', html);
+    EmailService.sendEmail({ to: `s${universityId}@stu.najah.edu`, subject: 'ارسال كود التحقق', html });
 };
 
-*/

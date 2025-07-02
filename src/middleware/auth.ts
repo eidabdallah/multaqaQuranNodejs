@@ -20,7 +20,7 @@ export class AuthMiddleware {
           return next(new ApiError("التوكن غير متوفر", 401));
         }
 
-        const cacheKey = `user_${decode.id}`;
+        const cacheKey = `user_${decode.universityId}`;
         let user: User | null | undefined = cache.get<User>(cacheKey);
 
         if (!user) {

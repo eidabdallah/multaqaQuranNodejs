@@ -8,7 +8,7 @@ export default class RateLimiterMiddleware {
         handler: (req: Request, res: Response, next: NextFunction, options: any) => {
             return res.status(429).json({
                 success: false,
-                message: 'Too many requests from this IP, please try again after 15 minutes'
+                message: 'طلب كثير، حاول لاحقًا'
             });
         }
     });

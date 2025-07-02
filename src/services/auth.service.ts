@@ -2,12 +2,15 @@ import User from '../models/user.model';
 import bcrypt from 'bcryptjs';
 import { UserAttributes } from '../interface/user/user.interface';
 import { UserCreationAttributes } from '../interface/user/userCreation.interface';
+import passwordResetCode from './../models/passwordResetCode.model';
 
 export default class AuthService {
-  async checkUniversityId(id: string): Promise<User | null> {
-    return await User.findOne({ where: { universityId: id } ,  attributes: ['id', 'universityId', 'password', 'confirmEmail', 'status'] }); 
-  }
-
+  async checkUniversityId(id: string, attributes: string[] = []): Promise<User | null> {
+    return await User.findOne({
+        where: { universityId: id },
+        attributes: attributes.length > 0 ? attributes : ['id']
+    });
+}
   async create(userData: UserCreationAttributes): Promise<UserAttributes> {
     userData.password = await bcrypt.hash(userData.password, +process.env.SALT_ROUNDS!);
     userData.role = "Student";
@@ -25,5 +28,14 @@ export default class AuthService {
 
   async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, +process.env.SALT_ROUNDS!);
+  }
+  async SaveCode(id: number, code: string) {
+    await passwordResetCode.create({ UserId : id, code });
+  }
+  async checkCode(id: number, code: string) {
+    return await passwordResetCode.findOne({ where: { UserId: id, code } });
+  }
+  async deleteCode(id: number, code: string) {
+    await passwordResetCode.destroy({ where: { UserId: id, code } });
   }
 }

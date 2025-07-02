@@ -36,44 +36,18 @@ export class AuthValidation {
         oldPassword: Validator.generalFields.password,
         newPassword: Validator.generalFields.password,
     });
+    static sendCodeSchema = Joi.object({
+        universityId: Validator.generalFields.universityId,
+    });
+    static forgotPasswordSchema = Joi.object({
+        universityId: Validator.generalFields.universityId,
+        code: Joi.string().length(6).required().messages({
+            'string.base': 'يجب أن يكون الرمز عبارة عن نص.',
+            'string.empty': 'لا يمكن أن يكون الرمز فارغاً.',
+            'string.length': 'الرمز خاطئ .',
+            'any.required': 'الرمز مطلوب.'
+        }),
+        newPassword: Validator.generalFields.password
+
+    });
 }
-
-
-// export const sendCodeSchema = Joi.object({
-//     email: Joi.alternatives().try(
-//         generalFields.hEmail,
-//         generalFields.sEmail
-//     ).required().messages({
-//         "alternatives.match": "يجب أن يكون البريد الإلكتروني إما بريد طالب من جامعة النجاح أو بريد Gmail.",
-//         "any.required": "البريد الإلكتروني مطلوب."
-//     }),
-// });
-
-// export const forgotPasswordSchema = Joi.object({
-//     email: Joi.alternatives().try(
-//         generalFields.hEmail,
-//         generalFields.sEmail
-//     ).required().messages({
-//         "alternatives.match": "يجب أن يكون البريد الإلكتروني إما بريد طالب من جامعة النجاح أو بريد Gmail.",
-//         "any.required": "البريد الإلكتروني مطلوب."
-//     }),
-//     password: generalFields.password,
-//     code: Joi.string().length(6).required().messages({
-//         'string.base': 'يجب أن يكون الرمز عبارة عن نص.',
-//         'string.empty': 'لا يمكن أن يكون الرمز فارغاً.',
-//         'string.length': 'الرمز خاطئ .',
-//         'any.required': 'الرمز مطلوب.'
-//     })
-// });
-
-// export const changePasswordSchema = Joi.object({
-//     email: Joi.alternatives().try(
-//         generalFields.hEmail,
-//         generalFields.sEmail
-//     ).required().messages({
-//         "alternatives.match": "يجب أن يكون البريد الإلكتروني إما بريد طالب من جامعة النجاح أو بريد Gmail.",
-//         "any.required": "البريد الإلكتروني مطلوب."
-//     }),
-//     oldPassword: generalFields.password,
-//     newPassword: generalFields.password,
-// });
