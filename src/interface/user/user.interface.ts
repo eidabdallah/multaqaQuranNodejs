@@ -8,4 +8,5 @@ export interface UserAttributes {
     confirmEmail: boolean;
     status: 'Active' | 'No_Active';
     gender: 'Male' | 'Female';
+    role: 'Admin' | 'Supervisor' | 'Doctor' | 'Student' | 'CollegeSupervisor';
 }
