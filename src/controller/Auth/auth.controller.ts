@@ -4,13 +4,14 @@ import AuthService from './../../services/auth.service';
 import { ApiError } from './../../utils/ApiError';
 import { confirmEmailMessage, sendConfirmEmail, sendCode } from './../../utils/authTemplete';
 import { generateRandomCode } from './../../utils/generateCode';
+import { cache } from '../../utils/cache.js';
 
 export default class AuthController {
     constructor(private authService: AuthService) { }
 
     login = async (req: Request, res: Response, next: NextFunction) => {
         const { universityId, password } = req.body;
-        const user = await this.authService.checkUniversityId(universityId, ['id', 'universityId', 'password', 'confirmEmail', 'status']);
+        const user = await this.authService.checkUniversityId(universityId, ['id', 'fullName', 'password' , 'universityId', 'status', 'phoneNumber', 'CollegeName', 'role']);
         if (!user)
             return next(new ApiError("معلومات المستخدم خاطئة", 400));
         const valid = await this.authService.validatePassword(password, user.password);
@@ -20,6 +21,11 @@ export default class AuthController {
             return next(new ApiError("الرجاء تأكيد الايميل الجامعي", 400));
         if (user.status === "No_Active")
             return next(new ApiError("لم يتم تفعيل الحساب بعد من قبل المسؤول", 400));
+
+        let userInfo = cache.get(`user_${user.id}`);
+        if (!userInfo) {
+            cache.set(`user_${user.id}`, { id: user.id, universityId: user.universityId, fullName: user.fullName, role: user.role, phoneNumber: user.phoneNumber, CollegeName: user.CollegeName, gender: user.gender });
+        }
         const token = jwt.sign({ id: user.id, universityId: user.universityId }, process.env.JWT_SECRET_LOGIN!, { expiresIn: '1d' });
         return res.status(200).json({ message: "تم تسجيل الدخول", token });
     };

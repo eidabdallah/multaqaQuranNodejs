@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { UserAttributes } from '../interface/user/user.interface';
 import { UserCreationAttributes } from '../interface/user/userCreation.interface';
 import passwordResetCode from './../models/passwordResetCode.model';
+import { cache } from './../utils/cache';
 
 export default class AuthService {
   async checkUniversityId(id: string, attributes: string[] = []): Promise<User | null> {
