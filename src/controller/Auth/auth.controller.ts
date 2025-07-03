@@ -11,7 +11,7 @@ export default class AuthController {
 
     login = async (req: Request, res: Response, next: NextFunction) => {
         const { universityId, password } = req.body;
-        const user = await this.authService.checkUniversityId(universityId, ['id', 'fullName', 'password' , 'universityId', 'status', 'phoneNumber', 'CollegeName', 'role']);
+        const user = await this.authService.checkUniversityId(universityId, ['id', 'fullName', 'password' , 'universityId', 'status', 'phoneNumber', 'CollegeName', 'role' , 'confirmEmail']);
         if (!user)
             return next(new ApiError("معلومات المستخدم خاطئة", 400));
         const valid = await this.authService.validatePassword(password, user.password);

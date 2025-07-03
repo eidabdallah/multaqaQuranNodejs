@@ -1,10 +1,15 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from './../config/DBconnection';
 import User from './user.model';
+import { HalaqaAttributes } from './../interface/halaqa/halaqa.interface';
+import { HalaqaCreationAttributes } from './../interface/halaqa/halaqaCreation.interface';
 
-class Halaqa extends Model {
+class Halaqa extends Model<HalaqaAttributes, HalaqaCreationAttributes> implements HalaqaAttributes {
     public id!: number;
     public halaqaName!: string;
+    public supervisorId!: number;
+    public CollegeName!: string;
+    public gender!: 'Male' | 'Female';
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -17,6 +22,19 @@ Halaqa.init({
     },
     halaqaName: {
         type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+    },
+    CollegeName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    supervisorId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+     gender: {
+        type: DataTypes.ENUM('Male', 'Female'),
         allowNull: false,
     },
 }, {
@@ -25,10 +43,10 @@ Halaqa.init({
     timestamps: true,
 });
 
-User.belongsTo(Halaqa, { foreignKey: 'halaqaId' });
-Halaqa.hasMany(User, { foreignKey: 'halaqaId' });
+Halaqa.hasMany(User, { foreignKey: 'halaqaId', as: 'Students' });
+User.belongsTo(Halaqa, { foreignKey: 'halaqaId', as: 'Halaqa' });
 
-Halaqa.belongsTo(User, { as: 'supervisor', foreignKey: 'supervisorId' });
-User.hasOne(Halaqa, { as: 'supervisedHalaqa', foreignKey: 'supervisorId' });
+Halaqa.belongsTo(User, { foreignKey: 'supervisorId', as: 'Supervisor' });
+User.hasOne(Halaqa, { foreignKey: 'supervisorId', as: 'SupervisedHalaqa' });
 
 export default Halaqa;

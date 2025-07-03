@@ -25,5 +25,17 @@ export default class UserController {
             return next(new ApiError("لم يتم العثور على المستخدم", 400));
         return res.status(200).json({ message: "معلومات المستخدم", user }); 
     }
+     changeRole = async (req: Request, res: Response, next: NextFunction) => { 
+        const { studentId , role } = req.body;
+        const checkStudent = await this.userService.checkStudent(parseInt(studentId));
+        if (!checkStudent) {
+            return next(new ApiError("الطالب غير موجود", 400));
+        }
+        const affectedRows = await this.userService.changeRoleStudent(parseInt(studentId), role);
+        if (affectedRows === 0) {
+            return next(new ApiError("لم يتم تحديث ", 400));
+        }
+        return res.status(200).json({ message: "تم تحديث  بنجاح" });
+    }
 
 }

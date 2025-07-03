@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { Validator } from './../middleware/validation';
-import { CollegesEnum } from './../utils/enum/college.enum';
+import { Roles } from "../utils/enum/role.enum";
 
 export class UserValidation {
     static updateInfoSchema = Joi.object({
@@ -13,5 +13,13 @@ export class UserValidation {
     })
     static getUserSchema = Joi.object({
         userId: Validator.generalFields.id,
+    })
+    static changeRoleSchema = Joi.object({
+        studentId: Validator.generalFields.id,
+        role : Joi.string().valid(...Object.values(Roles)).required().messages({
+            'any.required': 'الدور مطلوب',
+            'any.only': 'الدور المدخل غير صالح، القيم المسموحة هي: Student, Doctor, Supervisor, CollegeSupervisor',
+            'string.base': 'الدور يجب أن يكون نص',
+        })
     })
 }

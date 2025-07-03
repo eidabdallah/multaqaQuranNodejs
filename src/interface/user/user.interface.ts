@@ -9,4 +9,5 @@ export interface UserAttributes {
     status: 'Active' | 'No_Active';
     gender: 'Male' | 'Female';
     role: 'Admin' | 'Supervisor' | 'Doctor' | 'Student' | 'CollegeSupervisor';
+    halaqaId?: number | null;
 }

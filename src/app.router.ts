@@ -6,6 +6,7 @@ import setupMiddlewares from './utils/setupMiddlewares';
 import registerCronJobs from './utils/startCronJobs';
 import authRoutes from './routes/auth.route'
 import userRoutes from './routes/user.route'
+import halaqaRoutes from './routes/halaqa.route'
 
 export const initApp = (app: Application) => {
     connectDB();
@@ -17,6 +18,8 @@ export const initApp = (app: Application) => {
 
     app.use('/auth', authRoutes);
     app.use('/user', userRoutes);
+    app.use('/halaqa', halaqaRoutes);
+
 
     
     app.use(NotFoundMiddleware.notFound);
