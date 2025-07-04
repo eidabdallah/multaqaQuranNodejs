@@ -68,7 +68,8 @@ export default class HalaqaService {
             where: {
                 CollegeName,
                 role: { [Op.in]: ['Supervisor', 'CollegeSupervisor'] },
-                gender
+                gender,
+                status: 'Active'
             },
             include: [{
                 model: Halaqa,
@@ -89,7 +90,7 @@ export default class HalaqaService {
     }
     async getStudentsWithoutHalaqa(CollegeName: string, gender: string): Promise<User[] | null> {
         return await User.findAll({
-            where: { CollegeName, gender, halaqaId: null },
+            where: { CollegeName, gender, halaqaId: null , status: 'Active' ,  role: { [Op.notIn]: ['Doctor', 'Admin'] }, },
             attributes: ['id', 'fullName']
         });
     }
@@ -102,7 +103,7 @@ export default class HalaqaService {
     }
 
     async allStudentsByCollege(CollegeName: string, gender: string, role?: Roles, search?: string): Promise<User[] | null> {
-        const whereCondition: any = { CollegeName, gender };
+        const whereCondition: any = { CollegeName, gender , status: 'Active' };
         if (role) {
             whereCondition.role = role;
         }

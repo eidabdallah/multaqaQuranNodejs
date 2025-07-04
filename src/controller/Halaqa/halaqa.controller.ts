@@ -66,9 +66,12 @@ export default class HalaqaController {
     }
     updateSuperVisorHalaqa = async (req: Request, res: Response, next: NextFunction) => {
         const { halaqaId , supervisorId } = req.params;
-        const checkSupervisor = await this.halaqaService.checkSupervisorId(parseInt(supervisorId), ['id', 'role']);
+        const checkSupervisor = await this.halaqaService.checkSupervisorId(parseInt(supervisorId), ['id', 'role' , 'status']);
         if (!checkSupervisor) {
             return next(new ApiError("المشرف غير موجود", 400));
+        }
+        if(checkSupervisor.status === "No_Active"){
+            return next(new ApiError("المشرف غير مفعل حسابه", 400));
         }
         if (checkSupervisor.role !== "Supervisor" && checkSupervisor.role !== "CollegeSupervisor") {
             return next(new ApiError("ليش مشرفا", 400));
