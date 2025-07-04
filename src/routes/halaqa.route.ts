@@ -19,6 +19,6 @@ router.get("/:halaqaId" , AuthMiddleware.authorize(endPoints.collegeSupervisorOn
 router.delete("/:halaqaId" , AuthMiddleware.authorize(endPoints.collegeSupervisorOnly) ,AsyncHandler.asyncHandler(halaqaController.deleteHalaqa));
 router.patch("/:halaqaId/student/:studentId" , AuthMiddleware.authorize(endPoints.collegeSupervisorOnly) ,AsyncHandler.asyncHandler(halaqaController.updateStudentHalaqa));
 router.patch("/:halaqaId/supervisor/:supervisorId" , AuthMiddleware.authorize(endPoints.collegeSupervisorOnly) ,AsyncHandler.asyncHandler(halaqaController.updateSuperVisorHalaqa));
-
+router.patch("/deleteUser/:studentId" , AuthMiddleware.authorize(endPoints.collegeSupervisorOnly) ,AsyncHandler.asyncHandler(halaqaController.deleteUserFromHalaqa));
 //Validator.validate()
 export default router;

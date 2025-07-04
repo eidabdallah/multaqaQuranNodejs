@@ -111,4 +111,11 @@ export default class HalaqaService {
         }
         return await User.findAll({ where: whereCondition  , attributes: ['id', 'fullName', 'role', 'gender', 'CollegeName'] });
     }
+    async deleteUserFromHalaqa(studentId: number): Promise<number> {
+        const [affectedRows] = await User.update(
+            { halaqaId: null },
+            { where: { id: studentId } }
+        );
+        return affectedRows;
+    }
 }
