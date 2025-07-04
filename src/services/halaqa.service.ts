@@ -39,6 +39,7 @@ export default class HalaqaService {
     }
     async getHalaqaById(id: number): Promise<Halaqa | null> {
         return await Halaqa.findByPk(id, {
+            attributes: ['id', 'halaqaName', 'CollegeName', 'gender'],
             include: [
                 {
                     model: User,
@@ -67,7 +68,7 @@ export default class HalaqaService {
         return await User.findAll({
             where: {
                 CollegeName,
-                role: { [Op.in]: ['Supervisor', 'CollegeSupervisor'] },
+                role: { [Op.in]: ['TasmeaHifzSupervisor', 'CollegeSupervisor' , 'TasmeaSupervisor'] },
                 gender,
                 status: 'Active'
             },
@@ -102,7 +103,7 @@ export default class HalaqaService {
         return affectedRows;
     }
 
-    async allStudentsByCollege(CollegeName: string, gender: string, role?: Roles, search?: string): Promise<User[] | null> {
+    async allStudentsByCollege(CollegeName: string, gender: string, role?: Roles, search?: string): Promise<User[]> {
         const whereCondition: any = { CollegeName, gender , status: 'Active' };
         if (role) {
             whereCondition.role = role;

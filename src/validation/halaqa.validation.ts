@@ -21,7 +21,7 @@ export class HalaqaValidation {
     })
     static allStudentsByCollegeSchema = Joi.object({
         role: Joi.string().valid(...Object.values(Roles)).messages({
-            'any.only': 'الدور المدخل غير صالح، القيم المسموحة هي: Student, Doctor, Supervisor, CollegeSupervisor',
+            'any.only': 'الدور المدخل غير صالح، القيم المسموحة هي: Student, Doctor, TasmeaSupervisor,TasmeaHifzSupervisor, CollegeSupervisor',
             'string.base': 'الدور يجب أن يكون نص',
         }),
         search: Joi.string().messages({

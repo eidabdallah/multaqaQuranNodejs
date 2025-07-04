@@ -18,7 +18,7 @@ export default class HalaqaController {
         if (!checkSupervisor) {
             return next(new ApiError("المشرف غير موجود", 400));
         }
-        if (checkSupervisor.role !== "Supervisor" && checkSupervisor.role !== "CollegeSupervisor") {
+        if (checkSupervisor.role !== "TasmeaHifzSupervisor" && checkSupervisor.role !== "CollegeSupervisor" && checkSupervisor.role !== "TasmeaSupervisor") {
             return next(new ApiError("ليش مشرفا", 400));
         }
         const halaqa = await this.halaqaService.createHalaqa(req.body);
@@ -30,6 +30,7 @@ export default class HalaqaController {
     getHalaqatByCollege = async (req: Request, res: Response, next: NextFunction) => {
         const user = (req as any).user;
         const halaqat = await this.halaqaService.getHalaqatByCollege(user.CollegeName , user.gender);
+        // return res.json(user);
         if (!halaqat) {
             return next(new ApiError("لم يتم العثور على الحلقات", 400));
         }
@@ -73,7 +74,7 @@ export default class HalaqaController {
         if(checkSupervisor.status === "No_Active"){
             return next(new ApiError("المشرف غير مفعل حسابه", 400));
         }
-        if (checkSupervisor.role !== "Supervisor" && checkSupervisor.role !== "CollegeSupervisor") {
+        if (checkSupervisor.role !== "TasmeaHifzSupervisor" && checkSupervisor.role !== "CollegeSupervisor" && checkSupervisor.role !== "TasmeaSupervisor") {
             return next(new ApiError("ليش مشرفا", 400));
         }
         const affectedRows = await this.halaqaService.updateSuperVisorHalaqa(parseInt(halaqaId), parseInt(supervisorId));
@@ -112,7 +113,7 @@ export default class HalaqaController {
         const role = req.query.role as Roles;
          const search = req.query.search as string;
         const students = await this.halaqaService.allStudentsByCollege(user.CollegeName , user.gender , role , search);
-        if (!students) {
+        if (students.length === 0) {
             return next(new ApiError("لم يتم العثور على الطلاب", 400));
         }
         return res.status(200).json({ message: "تم العثور على الطلاب", students });

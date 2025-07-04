@@ -8,6 +8,6 @@ export interface UserAttributes {
     confirmEmail: boolean;
     status: 'Active' | 'No_Active';
     gender: 'Male' | 'Female';
-    role: 'Admin' | 'Supervisor' | 'Doctor' | 'Student' | 'CollegeSupervisor';
+    role: 'Admin' | 'TasmeaHifzSupervisor' | 'TasmeaSupervisor' |'Doctor' | 'Student' | 'CollegeSupervisor';
     halaqaId?: number | null;
 }
