@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.route'
 import userRoutes from './routes/user.route'
 import halaqaRoutes from './routes/halaqa.route'
 import adminRouter from './routes/admin.route'
+import DailyFollowUpRoutes from './routes/DailyFollowUp.route'
 
 export const initApp = (app: Application) => {
     connectDB();
@@ -21,6 +22,7 @@ export const initApp = (app: Application) => {
     app.use('/user', userRoutes);
     app.use('/halaqa', halaqaRoutes);
     app.use('/admin' , adminRouter)
+    app.use('/dailyFollowUp' , DailyFollowUpRoutes)
 
 
     
