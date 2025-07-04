@@ -25,4 +25,27 @@ export default class AdminController {
         }
         return res.status(200).json({ message: "تم قبول الطلب بنجاح" });
     };
+    createUser = async(req: Request, res: Response, next: NextFunction) => {
+        const { universityId , phoneNumber } = req.body;
+        const checkUniversity = await this.adminService.checkUniversity(universityId);
+        if(checkUniversity)
+            return next(new ApiError("الرقم الجامعي  موجود", 400));
+        const checkPhoneNumber = await this.adminService.checkPhoneNumber(phoneNumber);
+        if(checkPhoneNumber) 
+            return next(new ApiError("رقم الهاتف مستخدم", 400));
+        const user = await this.adminService.createUser(req.body);
+        if(!user)
+            return next(new ApiError("لم يتم انشاء المستخدم", 400));
+        return res.status(200).json({ message: "تم انشاء المستخدم بنجاح", user });
+    }
+    changeConfirmEmail = async(req: Request, res: Response, next: NextFunction) => {
+        const { userId } = req.params;
+        const checkUser = await this.adminService.checkUser(parseInt(userId));
+        if(!checkUser)
+            return next(new ApiError("المستخدم غير موجود", 400));
+        const affectedRows = await this.adminService.changeConfirmEmail(parseInt(userId));
+        if(affectedRows === 0)
+            return next(new ApiError("لم يتم تغيير حالة التاكيد", 400));
+        return res.status(200).json({ message: "تم تغيير حالة التاكيد بنجاح" });
+    }
 }

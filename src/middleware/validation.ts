@@ -9,10 +9,10 @@ export class Validator {
       "number.min": "رقم المعرف يجب أن يكون 1 أو أكبر.",
       "any.required": "حقل المعرف مطلوب.",
     }),
-    universityId: Joi.string().pattern(/^\d{8}$/).required().messages({
-      "string.pattern.base": "يجب أن يتكون رقم الجامعة من 8 أرقام.",
-      "any.required": "رقم الجامعة مطلوب."
-    }),
+    universityId: Joi.string().pattern(/^\d{4}$|^\d{8}$/).required().messages({
+    "string.pattern.base": "يجب أن يتكون رقم الجامعة من 4 أو 8 أرقام.",
+    "any.required": "رقم الجامعة مطلوب."
+  }),
     password: Joi.string().min(8).max(32).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/).required().messages({
       "string.min": "كلمة المرور يجب أن تكون على الأقل 8 أحرف.",
       "string.max": "كلمة المرور يجب ألا تتجاوز 32 حرفًا.",

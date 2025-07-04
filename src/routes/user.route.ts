@@ -13,5 +13,5 @@ const userController = new UserController(userService);
 
 router.patch("/", Validator.validate(UserValidation.updateInfoSchema) ,AuthMiddleware.authorize(endPoints.all) ,AsyncHandler.asyncHandler(userController.updateInfo));
 router.get("/:userId", Validator.validate(UserValidation.getUserSchema) , AuthMiddleware.authorize(endPoints.supervisorOnly) ,AsyncHandler.asyncHandler(userController.getUserById));
-router.patch("/changeRole" , Validator.validate(UserValidation.changeRoleSchema) ,AuthMiddleware.authorize(endPoints.collegeSupervisorOnly) ,AsyncHandler.asyncHandler(userController.changeRole));
+router.patch("/changeRole" , Validator.validate(UserValidation.changeRoleSchema) ,AuthMiddleware.authorize(endPoints.collegeSupervisorOrAdminOnly) ,AsyncHandler.asyncHandler(userController.changeRole));
 export default router;

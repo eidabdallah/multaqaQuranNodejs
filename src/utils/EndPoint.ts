@@ -6,5 +6,6 @@ export const endPoints = {
     doctorOnly: [Roles.DOCTOR],
     studentOnly: [Roles.STUDENT],
     collegeSupervisorOnly: [Roles.COLLEGE_SUPERVISOR],
+    collegeSupervisorOrAdminOnly: [Roles.ADMIN, Roles.COLLEGE_SUPERVISOR],
     supervisorOnly: [Roles.SUPERVISOR, Roles.COLLEGE_SUPERVISOR],
 };
