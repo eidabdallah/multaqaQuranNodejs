@@ -34,7 +34,6 @@ export class AuthMiddleware {
 
           cache.set(cacheKey, user);
         }
-
         if (accessRoles.length > 0 && !accessRoles.includes(user.role)) {
           return next(new ApiError("لا يوجد صلاحيات", 403));
         }

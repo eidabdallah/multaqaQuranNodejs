@@ -4,6 +4,7 @@ export const endPoints = {
     all: [Roles.ADMIN, Roles.STUDENT , Roles.DOCTOR, Roles.TASMEA_HIFZ_SUPERVISOR, Roles.TASMEA_SUPERVISOR, Roles.COLLEGE_SUPERVISOR],
     adminOnly: [Roles.ADMIN],
     doctorOnly: [Roles.DOCTOR],
+    adminOrDoctorOnly: [Roles.ADMIN, Roles.DOCTOR],
     studentOnly: [Roles.STUDENT],
     collegeSupervisorOnly: [Roles.COLLEGE_SUPERVISOR],
     collegeSupervisorOrAdminOnly: [Roles.ADMIN, Roles.COLLEGE_SUPERVISOR],

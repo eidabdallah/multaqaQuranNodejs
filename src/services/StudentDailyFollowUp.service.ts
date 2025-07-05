@@ -3,7 +3,9 @@ import { IStudentDailyFollowUp } from './../interface/StudentDailyFollowUp/Stude
 import { StudentDailyFollowUpCreationAttributes } from './../interface/StudentDailyFollowUp/StudentDailyFollowUpCreation';
 import StudentDailyFollowUp from './../models/StudentDailyFollowUp.model';
 import { cache } from './../utils/cache';
-import { semesterOrder, getSemesterInfo } from '../utils/getSemesterInfo';
+import { semesterOrder, getSemesterInfo, buildSemesterDateRange } from '../utils/getSemesterInfo';
+import { Op } from 'sequelize';
+import Halaqa from './../models/halaqa.model';
 export default class StudentDailyFollowUpService {
     async checkStudent(studentId: number): Promise<User | null> {
         let user = cache.get<User>(`user_${studentId}`) || null;
@@ -29,37 +31,37 @@ export default class StudentDailyFollowUpService {
         return affectedRows;
     }
     async getStudentFollowUps(userId: number, currentSemesterOnly: boolean = false) {
-    const cacheKey = `dailyFollowUp_${userId}`;
-    let followUps = cache.get<IStudentDailyFollowUp[]>(cacheKey);
+        const cacheKey = `dailyFollowUp_${userId}`;
+        let followUps = cache.get<IStudentDailyFollowUp[]>(cacheKey);
 
-    if (!followUps) {
-        followUps = await StudentDailyFollowUp.findAll({
-            where: { userId },
-            order: [['date', 'DESC']],
-        });
+        if (!followUps) {
+            followUps = await StudentDailyFollowUp.findAll({
+                where: { userId },
+                order: [['date', 'DESC']],
+            });
 
-        if (followUps.length > 0) {
-            cache.set(cacheKey, followUps);
+            if (followUps.length > 0) {
+                cache.set(cacheKey, followUps);
+            }
         }
+
+        if (!currentSemesterOnly) {
+            return followUps;
+        }
+        const currentDate = new Date();
+        const { semester, semesterYear } = getSemesterInfo(currentDate);
+
+        const currentSemesterFollowUps = followUps.filter(item => {
+            const itemSemesterInfo = getSemesterInfo(new Date(item.date));
+            return (
+                itemSemesterInfo.semester === semester &&
+                itemSemesterInfo.semesterYear === semesterYear
+            );
+        });
+        return currentSemesterFollowUps;
     }
 
-    if (!currentSemesterOnly) {
-        return followUps;
-    }
-    const currentDate = new Date();
-    const { semester, semesterYear } = getSemesterInfo(currentDate);
-
-    const currentSemesterFollowUps = followUps.filter(item => {
-        const itemSemesterInfo = getSemesterInfo(new Date(item.date));
-        return (
-            itemSemesterInfo.semester === semester &&
-            itemSemesterInfo.semesterYear === semesterYear
-        );
-    });
-    return currentSemesterFollowUps;
-}
-
-    groupFollowUpsBySemester(followUps: any[]) {
+    private groupFollowUpsBySemester(followUps: any[]) {
         const grouped: { [key: string]: any[] } = {};
 
         followUps.forEach(item => {
@@ -73,7 +75,7 @@ export default class StudentDailyFollowUpService {
 
         return grouped;
     }
-    sortGroupedFollowUps(grouped: { [key: string]: any[] }) {
+    private sortGroupedFollowUps(grouped: { [key: string]: any[] }) {
         const sortedKeys = Object.keys(grouped).sort((a, b) => {
             const [semesterA, yearA] = a.split(' ');
             const [semesterB, yearB] = b.split(' ');
@@ -93,5 +95,76 @@ export default class StudentDailyFollowUpService {
         const sortedResult = this.sortGroupedFollowUps(grouped);
         return sortedResult;
     }
+    private buildIncludeClause(fullName?: string, college?: string, halaqaName?: string) {
+        const include: any[] = [];
+
+        if (fullName || college || halaqaName) {
+            const userInclude: any = {
+                model: User,
+                as: 'user',
+                where: {},
+                attributes: [],
+                include: []
+            };
+
+            if (fullName) userInclude.where.fullName = { [Op.like]: `%${fullName}%` };
+            if (college) userInclude.where.CollegeName = college;
+
+            if (halaqaName) {
+                userInclude.include.push({
+                    model: Halaqa,
+                    as: 'Halaqa',
+                    where: { halaqaName },
+                    attributes: []
+                });
+            }
+
+            include.push(userInclude);
+        }
+
+        return include;
+    }
+    private calculatePages(followUps: StudentDailyFollowUp[]) {
+        let totalSavedPages = 0;
+        let totalReviewPages = 0;
+
+        followUps.forEach(item => {
+            totalSavedPages += item.pageNumberSaved || 0;
+            totalReviewPages += item.pageNumberReview || 0;
+        });
+
+        return { totalSavedPages, totalReviewPages };
+    }
+    private buildWhereClause(semester?: string) {
+        const where: any = {};
+
+        if (semester) {
+            const today = new Date();
+            const { semesterYear } = getSemesterInfo(today);
+            const dateFilter = buildSemesterDateRange(semester, semesterYear);
+
+            if (dateFilter) where.date = dateFilter;
+        }
+
+        return where;
+    }
+
+
+    async getStatistics(filters: { semester?: string, fullName?: string, college?: string, halaqaName?: string }) {
+        const { semester, fullName, college, halaqaName } = filters;
+
+        const where = this.buildWhereClause(semester);
+        const include = this.buildIncludeClause(fullName, college, halaqaName);
+
+        const followUps = await StudentDailyFollowUp.findAll({
+            where,
+            include,
+            attributes: ['pageNumberSaved', 'pageNumberReview']
+        });
+
+        return this.calculatePages(followUps);
+    }
+
+
 
 }
