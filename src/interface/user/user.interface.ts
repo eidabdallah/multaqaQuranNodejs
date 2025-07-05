@@ -9,5 +9,5 @@ export interface UserAttributes {
     status: 'Active' | 'No_Active';
     gender: 'Male' | 'Female';
     role: 'Admin' | 'TasmeaHifzSupervisor' | 'TasmeaSupervisor' |'Doctor' | 'Student' | 'CollegeSupervisor';
-    halaqaId?: number | null;
+    halaqaId?: number | null | undefined;
 }

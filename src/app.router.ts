@@ -9,7 +9,7 @@ import userRoutes from './routes/user.route'
 import halaqaRoutes from './routes/halaqa.route'
 import adminRouter from './routes/admin.route'
 import DailyFollowUpRoutes from './routes/DailyFollowUp.route'
-
+import ExamRequestRoutes from './routes/ExamRequest.route'
 export const initApp = (app: Application) => {
     connectDB();
     setupMiddlewares(app);
@@ -21,8 +21,10 @@ export const initApp = (app: Application) => {
     app.use('/auth', authRoutes);
     app.use('/user', userRoutes);
     app.use('/halaqa', halaqaRoutes);
-    app.use('/admin' , adminRouter)
-    app.use('/dailyFollowUp' , DailyFollowUpRoutes)
+    app.use('/admin' , adminRouter);
+    app.use('/dailyFollowUp' , DailyFollowUpRoutes);
+    app.use('/examRequest' , ExamRequestRoutes)
+
 
 
     

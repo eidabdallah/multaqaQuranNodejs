@@ -7,6 +7,7 @@ export interface ExamRequestAttributes {
     date: string;
     parts: string;
     examPattern: 'تثبيت' | 'عادي';
+    status: "انتظار" | "تاكيد" | "رفض";
     createdAt?: Date;
     updatedAt?: Date;
 }

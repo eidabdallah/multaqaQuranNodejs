@@ -14,7 +14,7 @@ export default class AdminService {
         let user = cache.get<User>(`user_${id}`) || null;
         if (user) return user;
 
-        user = await User.findByPk(id);
+        user = await User.findByPk(id , { attributes: ['id', 'fullName', 'universityId', 'phoneNumber', 'CollegeName', 'role' , 'gender' , 'halaqaId'],});
         if (user) {
             cache.set(`user_${id}`, user);
         }

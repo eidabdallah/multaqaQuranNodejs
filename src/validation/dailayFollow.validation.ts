@@ -57,7 +57,7 @@ export class DailyFollowUpValidation {
         semester: Joi.string().messages({
             "string.base": "الفصل الدراسي يجب أن يكون نصًا.",
         }),
-        fullName: Validator.generalFields.fullName,
+        fullName: Validator.generalFields.fullName.optional(),
         college: Joi.string().valid(...Object.values(CollegesEnum)).messages({
             "any.only": "الكلية غير صالحة.",
         }),
@@ -65,9 +65,8 @@ export class DailyFollowUpValidation {
             "string.base": "اسم الحلقة يجب أن يكون نصًا.",
 
         }),
-        gender: Joi.string().valid('Male', 'Female').required().messages({
-            "any.only": "الجنس يجب أن يكون 'ذكر' أو 'أنثى'.",
-            "any.required": "الجنس مطلوب.",
+        gender: Joi.string().valid('Male', 'Female').messages({
+            "any.only": "الجنس يجب أن يكون 'Female' أو 'Male'.",
         }),
     })
 

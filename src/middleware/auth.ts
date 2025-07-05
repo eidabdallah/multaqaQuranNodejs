@@ -25,7 +25,7 @@ export class AuthMiddleware {
 
         if (!user) {
           user = await User.findByPk(decode.id, {
-            attributes: ['id', 'fullName', 'universityId', 'phoneNumber', 'CollegeName', 'role' , 'gender'],
+            attributes: ['id', 'fullName', 'universityId', 'phoneNumber', 'CollegeName', 'role' , 'gender' , 'halaqaId'],
           });
 
           if (!user) {

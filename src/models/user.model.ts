@@ -12,6 +12,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
     public phoneNumber!: string;
     public CollegeName!: string;
     public confirmEmail!: boolean;
+    public halaqaId?: number | null | undefined;
     public status!: 'Active' | 'No_Active';
     public gender!: 'Male' | 'Female';
     public role!: 'Admin' | 'TasmeaHifzSupervisor' | 'TasmeaSupervisor' |'Doctor' | 'Student' | 'CollegeSupervisor';

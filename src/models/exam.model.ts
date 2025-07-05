@@ -1,25 +1,26 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from './../config/DBconnection';
 import User from './user.model';
-import { ExamRequestAttributes } from './../interface/ExamRequest/examRequest.interface';
+import { ExamAttributes } from './../interface/Exam/ExamAttributes.interface';
 
 
 
-class ExamRequest extends Model<ExamRequestAttributes> implements ExamRequestAttributes {
+class Exam extends Model<ExamAttributes> implements ExamAttributes {
     public id!: number;
     public StudentId!: number;
     public SupervisorId!: number;
     public examType!: 'تجريبي' | 'رسمي';
     public timeExam!: string;
     public date!: string;
-    public status!: "انتظار" | "تاكيد" | "رفض";
     public parts!: string;
     public examPattern!: 'تثبيت' | 'عادي';
+    public grade!: number;
+    public statusGrade!: 'راسب' | 'ناجح';
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
 
-ExamRequest.init({
+Exam.init({
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -31,7 +32,7 @@ ExamRequest.init({
     },
     SupervisorId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
     examType: {
         type: DataTypes.ENUM('تجريبي', 'رسمي'),
@@ -45,10 +46,6 @@ ExamRequest.init({
         type: DataTypes.STRING,
         allowNull: false,
     },
-    status: {
-        type: DataTypes.ENUM('انتظار', 'تاكيد', 'رفض'),
-        defaultValue: 'انتظار'
-    },
     parts: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -57,13 +54,23 @@ ExamRequest.init({
         type: DataTypes.ENUM('تثبيت', 'عادي'),
         allowNull: false,
     },
+    grade: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    statusGrade: {
+        type: DataTypes.ENUM('راسب', 'ناجح'),
+        allowNull: true,
+    },
 }, {
     sequelize,
-    tableName: 'examRequest',
+    tableName: 'exam',
     timestamps: true,
 });
 
-ExamRequest.belongsTo(User, { foreignKey: 'StudentId', as: 'student' });
-User.hasMany(ExamRequest, { foreignKey: 'StudentId', as: 'examRequests' });
+Exam.belongsTo(User, { foreignKey: 'StudentId', as: 'student' });
+Exam.belongsTo(User, { foreignKey: 'SupervisorId', as: 'supervisor' });
+// User.hasMany(Exam, { foreignKey: 'StudentId', as: 'studentExams' });
+// User.hasMany(Exam, { foreignKey: 'SupervisorId', as: 'supervisorExams' });
 
-export default ExamRequest;
+export default Exam;
