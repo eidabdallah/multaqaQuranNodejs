@@ -48,4 +48,14 @@ export default class AdminController {
             return next(new ApiError("لم يتم تغيير حالة التاكيد", 400));
         return res.status(200).json({ message: "تم تغيير حالة التاكيد بنجاح" });
     }
+    deleteUser = async(req: Request, res: Response, next: NextFunction) => {
+        const { userId } = req.params;
+        const checkUser = await this.adminService.checkUser(parseInt(userId));
+        if(!checkUser)
+            return next(new ApiError("المستخدم غير موجود", 400));
+        const affectedRows = await this.adminService.deleteUser(parseInt(userId));
+        if(affectedRows === 0)
+            return next(new ApiError("لم يتم حذف المستخدم", 400));
+        return res.status(200).json({ message: "تم حذف المستخدم بنجاح" });
+    }
 }

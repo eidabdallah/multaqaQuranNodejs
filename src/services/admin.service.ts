@@ -1,6 +1,7 @@
 import { UserAttributes } from '../interface/user/user.interface';
 import User from '../models/user.model';
 import  bcrypt  from 'bcryptjs';
+import { cache } from './../utils/cache';
 
 export default class AdminService {
     async getAllRequests(): Promise<User[] | null> {
@@ -10,7 +11,14 @@ export default class AdminService {
         });
     }
     async checkUser(id: number): Promise<User | null> {
-        return await User.findByPk(id);
+        let user = cache.get<User>(`user_${id}`) || null;
+        if (user) return user;
+
+        user = await User.findByPk(id);
+        if (user) {
+            cache.set(`user_${id}`, user);
+        }
+        return user;
     }
     async acceptRequest(id: number): Promise<number> {
         const [affectedRows] = await User.update( { status: 'Active' },{ where: { id }});
@@ -28,6 +36,10 @@ export default class AdminService {
     }
     async changeConfirmEmail(id: number): Promise<number> {
         const [affectedRows] = await User.update({ confirmEmail: true }, { where: { id } });
+        return affectedRows;
+    }
+    async deleteUser(id: number): Promise<number> {
+        const affectedRows = await User.destroy({ where: { id } });
         return affectedRows;
     }
 }

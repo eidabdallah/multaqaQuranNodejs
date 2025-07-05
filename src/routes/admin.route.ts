@@ -13,6 +13,7 @@ const adminController = new AdminController(adminService);
 
 router.get("/", AuthMiddleware.authorize(endPoints.adminOnly) ,AsyncHandler.asyncHandler(adminController.getAllRequests));
 router.patch("/accept/:userId",Validator.validate(AdminValidation.acceptRequestSchema) ,AuthMiddleware.authorize(endPoints.adminOnly) ,AsyncHandler.asyncHandler(adminController.acceptRequest));
+router.delete("/:id"  ,Validator.validate(AdminValidation.acceptRequestSchema) ,AuthMiddleware.authorize(endPoints.adminOnly) ,AsyncHandler.asyncHandler(adminController.deleteUser));
 router.post("/",Validator.validate(AdminValidation.createUserSchema) , AuthMiddleware.authorize(endPoints.adminOnly) ,AsyncHandler.asyncHandler(adminController.createUser));
 router.patch("/confirmEmail/:userId",Validator.validate(AdminValidation.acceptRequestSchema) ,AuthMiddleware.authorize(endPoints.adminOnly) ,AsyncHandler.asyncHandler(adminController.changeConfirmEmail));
 
