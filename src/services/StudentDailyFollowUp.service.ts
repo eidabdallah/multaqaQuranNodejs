@@ -167,7 +167,4 @@ export default class StudentDailyFollowUpService {
 
         return this.calculatePages(followUps);
     }
-
-
-
 }
