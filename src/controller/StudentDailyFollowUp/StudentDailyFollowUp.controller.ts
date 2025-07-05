@@ -66,13 +66,14 @@ export default class StudentDailyFollowUpController {
         return res.status(200).json({ message: "تم العثور على التقييم", dailyFollowUp });
     }
     getStatistics = async (req: Request, res: Response, next: NextFunction) => {
-        const { semester, fullName, college, halaqaName } = req.query;
+        const { semester, fullName, college, halaqaName , gender} = req.query;
 
         const statistics = await this.DailyFollowUpService.getStatistics({
             semester: semester as string,
             fullName: fullName as string,
             college: college as string,
-            halaqaName: halaqaName as string
+            halaqaName: halaqaName as string,
+            gender: gender as string 
         });
 
         return res.status(200).json({ message: "تم استخراج الإحصائيات", statistics });

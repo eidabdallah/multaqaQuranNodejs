@@ -95,10 +95,9 @@ export default class StudentDailyFollowUpService {
         const sortedResult = this.sortGroupedFollowUps(grouped);
         return sortedResult;
     }
-    private buildIncludeClause(fullName?: string, college?: string, halaqaName?: string) {
+    private buildIncludeClause(fullName?: string, college?: string, halaqaName?: string, gender?: string) {
         const include: any[] = [];
-
-        if (fullName || college || halaqaName) {
+        if (fullName || college || halaqaName || gender) {
             const userInclude: any = {
                 model: User,
                 as: 'user',
@@ -110,11 +109,15 @@ export default class StudentDailyFollowUpService {
             if (fullName) userInclude.where.fullName = { [Op.like]: `%${fullName}%` };
             if (college) userInclude.where.CollegeName = college;
 
-            if (halaqaName) {
+            const halaqaWhere: any = {};
+            if (halaqaName) halaqaWhere.halaqaName = halaqaName;
+            if (gender) halaqaWhere.gender = gender;
+
+            if (halaqaName || gender) {
                 userInclude.include.push({
                     model: Halaqa,
                     as: 'Halaqa',
-                    where: { halaqaName },
+                    where: halaqaWhere,
                     attributes: []
                 });
             }
@@ -150,16 +153,16 @@ export default class StudentDailyFollowUpService {
     }
 
 
-    async getStatistics(filters: { semester?: string, fullName?: string, college?: string, halaqaName?: string }) {
-        const { semester, fullName, college, halaqaName } = filters;
+    async getStatistics(filters: { semester?: string, fullName?: string, college?: string, halaqaName?: string, gender?: string }) {
+        const { semester, fullName, college, halaqaName, gender } = filters;
 
         const where = this.buildWhereClause(semester);
-        const include = this.buildIncludeClause(fullName, college, halaqaName);
+        const include = this.buildIncludeClause(fullName, college, halaqaName, gender);
 
         const followUps = await StudentDailyFollowUp.findAll({
             where,
             include,
-            attributes: ['pageNumberSaved', 'pageNumberReview']
+            attributes: ['pageNumberSaved', 'pageNumberReview'],
         });
 
         return this.calculatePages(followUps);
