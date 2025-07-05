@@ -11,6 +11,8 @@ class StudentDailyFollowUp extends Model< IStudentDailyFollowUp , StudentDailyFo
     public note!: string;
     public date!: Date;
     public userId!: number;
+    public pageNumberSaved!: number;
+    public pageNumberReview!: number
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -37,10 +39,18 @@ StudentDailyFollowUp.init({
         type: DataTypes.DATEONLY,
         allowNull: false,
     },
+    pageNumberSaved:{
+        type: DataTypes.FLOAT,
+        allowNull: false,
+    },
+    pageNumberReview:{
+        type: DataTypes.FLOAT,
+        allowNull: false,
+    },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-  }
+    }
 }, {
     sequelize,
     tableName: 'StudentDailyFollowUp',

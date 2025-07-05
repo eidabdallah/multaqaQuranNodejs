@@ -8,4 +8,5 @@ export const endPoints = {
     collegeSupervisorOnly: [Roles.COLLEGE_SUPERVISOR],
     collegeSupervisorOrAdminOnly: [Roles.ADMIN, Roles.COLLEGE_SUPERVISOR],
     supervisorOnly: [Roles.TASMEA_HIFZ_SUPERVISOR, Roles.TASMEA_SUPERVISOR, Roles.COLLEGE_SUPERVISOR],
+    supervisorOrStudentOnly: [Roles.STUDENT, Roles.TASMEA_HIFZ_SUPERVISOR, Roles.TASMEA_SUPERVISOR, Roles.COLLEGE_SUPERVISOR],
 };
