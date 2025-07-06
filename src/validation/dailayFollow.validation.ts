@@ -54,10 +54,6 @@ export class DailyFollowUpValidation {
         id: Validator.generalFields.id
     })
     static statisticsSchema = Joi.object({
-        semester: Joi.string().messages({
-            "string.base": "الفصل الدراسي يجب أن يكون نصًا.",
-        }),
-        fullName: Validator.generalFields.fullName.optional(),
         college: Joi.string().valid(...Object.values(CollegesEnum)).messages({
             "any.only": "الكلية غير صالحة.",
         }),

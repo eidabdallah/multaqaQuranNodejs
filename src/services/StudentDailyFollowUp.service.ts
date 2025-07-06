@@ -6,6 +6,7 @@ import { cache } from './../utils/cache';
 import { semesterOrder, getSemesterInfo, buildSemesterDateRange } from '../utils/getSemesterInfo';
 import { Op } from 'sequelize';
 import Halaqa from './../models/halaqa.model';
+import Exam from './../models/exam.model';
 export default class StudentDailyFollowUpService {
     async checkStudent(studentId: number): Promise<User | null> {
         let user = cache.get<User>(`user_${studentId}`) || null;
@@ -33,7 +34,6 @@ export default class StudentDailyFollowUpService {
     async getStudentFollowUps(userId: number, currentSemesterOnly: boolean = false) {
         const cacheKey = `dailyFollowUp_${userId}`;
         let followUps = cache.get<IStudentDailyFollowUp[]>(cacheKey);
-
         if (!followUps) {
             followUps = await StudentDailyFollowUp.findAll({
                 where: { userId },
@@ -58,9 +58,13 @@ export default class StudentDailyFollowUpService {
                 itemSemesterInfo.semesterYear === semesterYear
             );
         });
-        return currentSemesterFollowUps;
+        return {
+            semesterInfo: {
+                message: `${semester} ${semesterYear}`,
+                followUps: currentSemesterFollowUps
+            }
+        }
     }
-
     private groupFollowUpsBySemester(followUps: any[]) {
         const grouped: { [key: string]: any[] } = {};
 
@@ -72,7 +76,6 @@ export default class StudentDailyFollowUpService {
             }
             grouped[key].push(item);
         });
-
         return grouped;
     }
     private sortGroupedFollowUps(grouped: { [key: string]: any[] }) {
@@ -83,21 +86,21 @@ export default class StudentDailyFollowUpService {
             if (yearA !== yearB) return parseInt(yearB) - parseInt(yearA);
             return semesterOrder(semesterB) - semesterOrder(semesterA);
         });
-
         return sortedKeys.map(key => ({
             semester: key,
             followUps: grouped[key]
         }));
     }
     async getDailyFollowUpForStudent(userId: number): Promise<any> {
-        const followUps = await this.getStudentFollowUps(userId);
+        const followUpsResult = await this.getStudentFollowUps(userId);
+        const followUps = Array.isArray(followUpsResult) ? followUpsResult : followUpsResult.semesterInfo?.followUps || [];
         const grouped = this.groupFollowUpsBySemester(followUps);
         const sortedResult = this.sortGroupedFollowUps(grouped);
         return sortedResult;
     }
-    private buildIncludeClause(fullName?: string, college?: string, halaqaName?: string, gender?: string) {
+    private buildIncludeClause(college?: string, halaqaName?: string, gender?: string) {
         const include: any[] = [];
-        if (fullName || college || halaqaName || gender) {
+        if (college || halaqaName || gender) {
             const userInclude: any = {
                 model: User,
                 as: 'user',
@@ -105,10 +108,7 @@ export default class StudentDailyFollowUpService {
                 attributes: [],
                 include: []
             };
-
-            if (fullName) userInclude.where.fullName = { [Op.like]: `%${fullName}%` };
             if (college) userInclude.where.CollegeName = college;
-
             const halaqaWhere: any = {};
             if (halaqaName) halaqaWhere.halaqaName = halaqaName;
             if (gender) halaqaWhere.gender = gender;
@@ -121,50 +121,69 @@ export default class StudentDailyFollowUpService {
                     attributes: []
                 });
             }
-
             include.push(userInclude);
         }
-
         return include;
     }
     private calculatePages(followUps: StudentDailyFollowUp[]) {
         let totalSavedPages = 0;
         let totalReviewPages = 0;
-
         followUps.forEach(item => {
             totalSavedPages += item.pageNumberSaved || 0;
             totalReviewPages += item.pageNumberReview || 0;
         });
-
         return { totalSavedPages, totalReviewPages };
     }
-    private buildWhereClause(semester?: string) {
-        const where: any = {};
-
-        if (semester) {
-            const today = new Date();
-            const { semesterYear } = getSemesterInfo(today);
-            const dateFilter = buildSemesterDateRange(semester, semesterYear);
-
-            if (dateFilter) where.date = dateFilter;
-        }
-
-        return where;
+    private buildWhereClause() {
+        const today = new Date();
+        const { semester, semesterYear } = getSemesterInfo(today);
+        const dateFilter = buildSemesterDateRange(semester, semesterYear);
+        const where = dateFilter ? { date: dateFilter } : {};
+        return { where, semester, semesterYear };
     }
-
-
-    async getStatistics(filters: { semester?: string, fullName?: string, college?: string, halaqaName?: string, gender?: string }) {
-        const { semester, fullName, college, halaqaName, gender } = filters;
-
-        const where = this.buildWhereClause(semester);
-        const include = this.buildIncludeClause(fullName, college, halaqaName, gender);
-
+    private async getExamCount(college?: string, halaqaName?: string, gender?: string): Promise<number> {
+        const examInclude: any[] = [
+            {
+                model: User,
+                as: 'student',
+                where: {},
+                include: []
+            }
+        ];
+        if (college) examInclude[0].where.CollegeName = college;
+        if (halaqaName || gender) {
+            const halaqaWhere: any = {};
+            if (halaqaName) halaqaWhere.halaqaName = halaqaName;
+            if (gender) halaqaWhere.gender = gender;
+            examInclude[0].include.push({
+                model: Halaqa,
+                as: 'Halaqa',
+                where: halaqaWhere,
+                attributes: []
+            });
+        }
+        return await Exam.count({
+            where: { grade: { [Op.not]: null } },
+            include: examInclude
+        });
+    }
+    async getStatistics(filters: { college?: string, halaqaName?: string, gender?: string }) {
+        const { college, halaqaName, gender } = filters;
+        const dataWhere = this.buildWhereClause();
+        const include = this.buildIncludeClause(college, halaqaName, gender);
         const followUps = await StudentDailyFollowUp.findAll({
-            where,
+            where: dataWhere.where,
             include,
             attributes: ['pageNumberSaved', 'pageNumberReview'],
         });
-
-        return this.calculatePages(followUps);
+        const { totalSavedPages, totalReviewPages } = this.calculatePages(followUps);
+        const examCount = await this.getExamCount(college, halaqaName, gender);
+        return {
+            message: `إحصائيات ${dataWhere.semester} ${dataWhere.semesterYear}`,
+            totalSavedPages,
+            totalReviewPages,
+            examCount
+        };
     }
+
 }

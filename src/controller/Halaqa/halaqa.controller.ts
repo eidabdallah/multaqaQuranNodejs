@@ -6,7 +6,6 @@ import { Roles } from '../../utils/enum/role.enum';
 
 export default class HalaqaController {
     constructor(private halaqaService: HalaqaService) { }
-// بعد ما جبت الطلاب ، بدي اكبس على الطالب اجيب الاحصائيات تاعونو 
 
     createHalaqa = async (req: Request, res: Response, next: NextFunction) => {
         const { halaqaName, supervisorId} = req.body;
@@ -30,7 +29,6 @@ export default class HalaqaController {
     getHalaqatByCollege = async (req: Request, res: Response, next: NextFunction) => {
         const user = (req as any).user;
         const halaqat = await this.halaqaService.getHalaqatByCollege(user.CollegeName , user.gender);
-        // return res.json(user);
         if (!halaqat) {
             return next(new ApiError("لم يتم العثور على الحلقات", 400));
         }
