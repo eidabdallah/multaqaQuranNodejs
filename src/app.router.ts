@@ -10,6 +10,7 @@ import halaqaRoutes from './routes/halaqa.route'
 import adminRouter from './routes/admin.route'
 import DailyFollowUpRoutes from './routes/DailyFollowUp.route'
 import ExamRequestRoutes from './routes/ExamRequest.route'
+import ExamRoutes from './routes/Exam.route'
 export const initApp = (app: Application) => {
     connectDB();
     setupMiddlewares(app);
@@ -23,7 +24,9 @@ export const initApp = (app: Application) => {
     app.use('/halaqa', halaqaRoutes);
     app.use('/admin' , adminRouter);
     app.use('/dailyFollowUp' , DailyFollowUpRoutes);
-    app.use('/examRequest' , ExamRequestRoutes)
+    app.use('/examRequest' , ExamRequestRoutes);
+    app.use('/exam' , ExamRoutes);
+
 
 
 
