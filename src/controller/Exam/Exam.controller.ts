@@ -66,5 +66,35 @@ export default class ExamController {
             ]
         });
     }
+    getStudentForSupervisor = async (req: Request, res: Response, next: NextFunction) => {
+        const user = (req as any).user;
+        const supervisorHalaqa = await this.examService.getSupervisorHalaqaId(user.id);
+        if (!supervisorHalaqa) {
+            return next(new ApiError("لم يتم العثور على المشرف", 400));
+        }
+        const students = await this.examService.getStudentsForSupervisor(supervisorHalaqa.id);
+        if (!students || students.length === 0) {
+            return next(new ApiError("لم يتم العثور على الطلاب", 400));
+        }
+        return res.status(200).json({ message: "تم العثور على الطلاب", students });
+
+    }
+    createFormalExam = async (req: Request, res: Response, next: NextFunction) => {
+        req.body.examType = "رسمي";
+        const exam = await this.examService.createFormalExam(req.body);
+        if (!exam) {
+            return next(new ApiError("لم يتم انشاء الامتحان", 400));
+        }
+        return res.status(200).json({ message: "تم انشاء الامتحان بنجاح" });
+    }
+    getFormalExams = async (req: Request, res: Response, next: NextFunction) => {
+        const exams = await this.examService.getFormalExams();
+        if (!exams || exams.length === 0) {
+            return next(new ApiError("لم يتم العثور على الامتحانات", 400));
+        }
+        return res.status(200).json({ message: "تم العثور على الامتحانات", exams });
+    }
+    
+
 }
 

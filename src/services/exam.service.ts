@@ -53,4 +53,19 @@ export default class ExamService {
             include: [{ model: User, as: 'supervisor', attributes: ['fullName'] }]
         });
     }
+    async getStudentsForSupervisor(halaqaId :number) : Promise<User[]> {
+        return await User.findAll({ 
+            where: { halaqaId},
+            attributes : ['id', 'fullName'],
+        });
+    }
+    async createFormalExam(examData: Exam): Promise<Exam> {
+        return await Exam.create(examData);
+    }
+    async getFormalExams(): Promise<Exam[]> {
+        return await Exam.findAll({ 
+            where: { examType: 'رسمي' , grade: null },
+            attributes : ['id', 'examType', 'timeExam', 'date', 'parts', 'examPattern' , 'grade', 'statusGrade'],
+        });
+    }
 }
