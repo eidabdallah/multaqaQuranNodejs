@@ -70,7 +70,7 @@ Exam.init({
 
 Exam.belongsTo(User, { foreignKey: 'StudentId', as: 'student' });
 Exam.belongsTo(User, { foreignKey: 'SupervisorId', as: 'supervisor' });
-// User.hasMany(Exam, { foreignKey: 'StudentId', as: 'studentExams' });
-// User.hasMany(Exam, { foreignKey: 'SupervisorId', as: 'supervisorExams' });
+User.hasMany(Exam, { foreignKey: 'StudentId', as: 'studentExams' });
+User.hasMany(Exam, { foreignKey: 'SupervisorId', as: 'supervisorExams' });
 
 export default Exam;
